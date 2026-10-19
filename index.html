@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<!--
+  ============================================================
+  ALBUQUERQUE — Primeira entrega (protótipo estático)
+  ------------------------------------------------------------
+  Página única: tudo vive neste ficheiro. Não há JavaScript.
+  Toda a aparência (cores, tamanhos, espaçamentos, fonte)
+  é alterada no style.css — aqui só está a estrutura.
+
+  Mapa da página (procure pelos blocos "ZONA"):
+    ZONA 1 — Cabeçalho: logotipo (esq.) + login e menu (dir.)
+    ZONA 2 — Opções de jogo: dificuldade + tamanho do tabuleiro
+    ZONA 3 — Tabuleiro (imagem placeholder)
+    ZONA 4 — Rodapé do jogo: mensagens + botão desistir
+  ============================================================
+-->
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- ALTERAR AQUI: título que aparece no separador do browser -->
+  <title>Albuquerque</title>
+
+  <!-- Fonte Montserrat (Google Fonts). Usada na página toda via style.css -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="pagina">
+
+  <!-- ========================================================
+       ZONA 1 — CABEÇALHO
+       Logotipo à esquerda; login + menu hambúrguer à direita.
+       ======================================================== -->
+  <header class="cabecalho">
+
+    <!-- LOGOTIPO
+         ALTERAR AQUI: o texto do logotipo.
+         A primeira letra fica num <span class="logotipo-inicial">
+         para poder ter tamanho/cor próprios (ver style.css). -->
+    <h1 class="logotipo">
+      <span class="logotipo-inicial">A</span>lbuquerque
+    </h1>
+
+    <div class="cabecalho-direita">
+
+      <!-- LOGIN
+           ALTERAR AQUI: textos dos campos e do botão. -->
+      <form class="login" action="#" method="post">
+        <input class="login-campo" type="text" name="utilizador" placeholder="Utilizador">
+        <input class="login-campo" type="password" name="senha" placeholder="Senha">
+        <button class="botao login-botao" type="submit">Entrar</button>
+      </form>
+
+      <!-- MENU DE CONFIGURAÇÕES (hambúrguer)
+           Usa <details>, que abre e fecha com um clique sem precisar
+           de JavaScript. O ícone ☰ está no <summary>. -->
+      <details class="menu">
+        <summary class="menu-botao" title="Configurações">&#9776;</summary>
+
+        <div class="menu-painel">
+
+          <!-- INSTRUÇÕES
+               ALTERAR AQUI: texto das instruções do jogo. -->
+          <section class="menu-secao instrucoes">
+            <h2 class="menu-titulo">Instruções</h2>
+            <p class="menu-texto">As regras do jogo vão aparecer aqui.</p>
+          </section>
+
+          <!-- CLASSIFICAÇÕES
+               ALTERAR AQUI: linhas da tabela (uma <tr> por jogador). -->
+          <section class="menu-secao classificacoes">
+            <h2 class="menu-titulo">Classificações</h2>
+            <table class="tabela">
+              <thead>
+                <tr><th>#</th><th>Jogador</th><th>Vitórias</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>1</td><td>—</td><td>0</td></tr>
+                <tr><td>2</td><td>—</td><td>0</td></tr>
+                <tr><td>3</td><td>—</td><td>0</td></tr>
+              </tbody>
+            </table>
+          </section>
+
+        </div>
+      </details>
+
+    </div>
+  </header>
+
+
+  <main class="jogo">
+
+    <!-- ======================================================
+         ZONA 2 — OPÇÕES DE JOGO
+         Dificuldade (bolinhas) + tamanho do tabuleiro (slider).
+         ====================================================== -->
+    <section class="opcoes">
+
+      <!-- DIFICULDADE
+           Botões de rádio: só um pode estar escolhido.
+           "checked" indica o valor escolhido por omissão. -->
+      <fieldset class="opcao dificuldade">
+        <legend class="opcao-titulo">Dificuldade</legend>
+        <label class="dificuldade-item">
+          <input type="radio" name="dificuldade" value="facil" checked> Fácil
+        </label>
+        <label class="dificuldade-item">
+          <input type="radio" name="dificuldade" value="medio"> Médio
+        </label>
+        <label class="dificuldade-item">
+          <input type="radio" name="dificuldade" value="dificil"> Difícil
+        </label>
+      </fieldset>
+
+      <!-- TAMANHO DO TABULEIRO
+           ALTERAR AQUI: min/max/value do slider (3 a 10).
+           Sem JavaScript o número não atualiza ao arrastar;
+           por isso mostramos os limites dos dois lados. -->
+      <fieldset class="opcao tamanho">
+        <legend class="opcao-titulo">Tabuleiro</legend>
+        <span class="tamanho-limite">3×3</span>
+        <input class="tamanho-slider" type="range" name="tamanho" min="3" max="10" step="1" value="6">
+        <span class="tamanho-limite">10×10</span>
+      </fieldset>
+
+    </section>
+
+
+    <!-- ======================================================
+         ZONA 3 — TABULEIRO
+         ALTERAR AQUI: trocar a imagem placeholder pelo jogo.
+         ====================================================== -->
+    <section class="tabuleiro">
+      <img class="tabuleiro-imagem" src="tabuleiro-placeholder.png" alt="Tabuleiro do jogo (placeholder)">
+    </section>
+
+
+    <!-- ======================================================
+         ZONA 4 — MENSAGENS + DESISTIR
+         ====================================================== -->
+    <section class="rodape-jogo">
+
+      <!-- MENSAGENS
+           ALTERAR AQUI: texto de estado do jogo. -->
+      <div class="mensagens">
+        <p class="mensagem">Bem-vindo! Escolhe a dificuldade e o tamanho do tabuleiro.</p>
+      </div>
+
+      <!-- DESISTIR -->
+      <button class="botao botao-desistir" type="button">Desistir</button>
+
+    </section>
+
+  </main>
+
+</body>
+</html>

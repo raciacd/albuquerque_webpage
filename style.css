@@ -1,0 +1,298 @@
+/* ============================================================
+   ALBUQUERQUE
+   ------------------------------------------------------------
+   1. VARIÁVEIS   → cores, fonte, tamanhos da página toda
+   2. BASE        → página, fonte, botões comuns
+   3. ZONA 1      → cabeçalho: logotipo, login, menu hambúrguer
+   4. ZONA 2      → opções: dificuldade e slider
+   5. ZONA 3      → tabuleiro
+   6. ZONA 4      → mensagens e botão desistir
+   ============================================================ */
+
+
+/* ============================================================
+   1. VARIÁVEIS — ALTERAR AQUI
+   ============================================================ */
+:root {
+  /* Fonte usada em toda a página */
+  --fonte: 'Montserrat', Arial, sans-serif;
+
+  /* Cores gerais */
+  --cor-fundo: #f4f4f4;
+  --cor-texto: #222222;
+  --cor-caixa: #ffffff;
+  --cor-borda: #cccccc;
+  --cor-destaque: #d62828;       /* vermelho inicial do logotipo e botão desistir */
+
+  /* Logotipo */
+  --logo-tamanho: 2.8rem;
+  --logo-inicial-tamanho: 4rem;
+
+  /* Tabuleiro */
+  --tabuleiro-tamanho: 420px;    /* largura máxima da imagem do jogo */
+
+  /* Espaçamentos e cantos */
+  --espaco: 16px;
+  --raio: 6px;
+}
+
+
+/* ============================================================
+   2. BASE
+   ============================================================ */
+* {
+  box-sizing: border-box;
+}
+
+.pagina {
+  margin: 0;
+  padding: var(--espaco);
+  font-family: var(--fonte);
+  background: var(--cor-fundo);
+  color: var(--cor-texto);
+}
+
+/* Campos de formulário herdam a Montserrat (por omissão não herdam) */
+input,
+button {
+  font-family: inherit;
+  font-size: 0.9rem;
+}
+
+/* Botão genérico (usado no login e no desistir) */
+.botao {
+  padding: 8px 16px;
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+  background: var(--cor-caixa);
+  cursor: pointer;
+}
+
+.botao:hover {
+  background: #eaeaea;
+}
+
+
+/* ============================================================
+   3. ZONA 1 — CABEÇALHO
+   ============================================================ */
+.cabecalho {
+  display: flex;
+  justify-content: space-between;   /* logotipo à esquerda, resto à direita */
+  align-items: center;              /* tudo à mesma altura */
+  flex-wrap: wrap;
+  gap: var(--espaco);
+  padding-bottom: var(--espaco);
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+/* --- Logotipo --- */
+.logotipo {
+  margin: 0;
+  font-size: var(--logo-tamanho);
+  font-weight: 800;
+  letter-spacing: 1px;
+  line-height: 1;
+}
+
+.logotipo-inicial {
+  font-size: var(--logo-inicial-tamanho);
+  color: var(--cor-destaque);
+}
+
+/* --- Lado direito: login + menu --- */
+.cabecalho-direita {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco);
+}
+
+/* --- Login --- */
+.login {
+  display: flex;
+  gap: 8px;
+}
+
+.login-campo {
+  width: 130px;
+  padding: 8px;
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+}
+
+/* --- Menu hambúrguer --- */
+.menu {
+  position: relative;               /* o painel abre por baixo do ícone */
+}
+
+.menu-botao {
+  list-style: none;                 /* tira o triângulo do <summary> */
+  font-size: 1.8rem;
+  line-height: 1;
+  padding: 4px 10px;
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+  background: var(--cor-caixa);
+  cursor: pointer;
+  user-select: none;
+}
+
+.menu-botao::-webkit-details-marker {
+  display: none;                    /* tira o triângulo no Safari/Chrome antigos */
+}
+
+/* Painel que aparece ao clicar; sobrepõe-se à página */
+.menu-painel {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  z-index: 10;
+  width: 300px;
+  padding: var(--espaco);
+  background: var(--cor-caixa);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.menu-secao + .menu-secao {
+  margin-top: var(--espaco);
+  padding-top: var(--espaco);
+  border-top: 1px solid var(--cor-borda);
+}
+
+.menu-titulo {
+  margin: 0 0 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.menu-texto {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+/* Tabela de classificações */
+.tabela {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.tabela th,
+.tabela td {
+  padding: 6px;
+  text-align: left;
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+
+/* ============================================================
+   4. ZONA 2 — OPÇÕES DE JOGO
+   ============================================================ */
+.jogo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;              /* centra tudo na horizontal */
+  gap: var(--espaco);
+  margin-top: calc(var(--espaco) * 2);
+}
+
+.opcoes {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--espaco);
+}
+
+.opcao {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  padding: 8px 16px;
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+  background: var(--cor-caixa);
+}
+
+.opcao-titulo {
+  padding: 0 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+/* --- Dificuldade (bolinhas) --- */
+.dificuldade-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+
+.dificuldade-item input {
+  accent-color: var(--cor-destaque);  /* cor da bolinha escolhida */
+}
+
+/* --- Slider do tamanho --- */
+.tamanho-limite {
+  font-size: 0.8rem;
+}
+
+.tamanho-slider {
+  width: 160px;
+  accent-color: var(--cor-destaque);
+}
+
+
+/* ============================================================
+   5. ZONA 3 — TABULEIRO
+   ============================================================ */
+.tabuleiro {
+  width: 100%;
+  max-width: var(--tabuleiro-tamanho);
+}
+
+.tabuleiro-imagem {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+}
+
+
+/* ============================================================
+   6. ZONA 4 — MENSAGENS + DESISTIR
+   ============================================================ */
+.rodape-jogo {
+  display: flex;
+  align-items: stretch;
+  gap: var(--espaco);
+  width: 100%;
+  max-width: var(--tabuleiro-tamanho);  /* mesma largura do tabuleiro */
+}
+
+.mensagens {
+  flex: 1;                          /* ocupa o espaço que sobra */
+  padding: 10px 14px;
+  background: var(--cor-caixa);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+}
+
+.mensagem {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.botao-desistir {
+  background: var(--cor-destaque);
+  border-color: var(--cor-destaque);
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.botao-desistir:hover {
+  background: #b01f1f;
+}
