@@ -1,5 +1,5 @@
 /* ============================================================
-   ALBUQUERQUE
+   ALQUERQUE
    ------------------------------------------------------------
    1. VARIÁVEIS   → cores, fonte, tamanhos da página toda
    2. BASE        → página, fonte, botões comuns
@@ -29,7 +29,16 @@
   --logo-inicial-tamanho: 4rem;
 
   /* Tabuleiro */
-  --tabuleiro-tamanho: 420px;    /* largura máxima da imagem do jogo */
+  --tabuleiro-tamanho: 420px;    /* largura máxima do tabuleiro */
+  --tab-fundo: #ecd9b0;          /* madeira */
+  --tab-linha: #6b4f2a;          /* linhas e pontos */
+  --tab-linha-largura: 3;        /* em unidades do SVG */
+  --peca-jogador1: #fdfdfd;      /* brancas (em baixo) */
+  --peca-jogador2: #2b2b2b;      /* pretas (em cima) */
+  --peca-contorno: #3a2a14;
+  --tab-selecao: var(--cor-destaque);
+  --tab-destaque: #2a9d8f;       /* destinos de jogadas simples */
+  --tab-captura: #e76f51;        /* destinos de captura e peça capturada */
 
   /* Espaçamentos e cantos */
   --espaco: 16px;
@@ -70,6 +79,11 @@ button {
 
 .botao:hover {
   background: #eaeaea;
+}
+
+/* Garante que o atributo "hidden" esconde mesmo (mesmo com display: flex) */
+[hidden] {
+  display: none !important;
 }
 
 
@@ -172,6 +186,10 @@ button {
   font-size: 0.9rem;
 }
 
+.menu-texto + .menu-texto {
+  margin-top: 8px;
+}
+
 /* Tabela de classificações */
 .tabela {
   width: 100%;
@@ -235,13 +253,21 @@ button {
 }
 
 /* --- Slider do tamanho --- */
-.tamanho-limite {
-  font-size: 0.8rem;
+.tamanho-valor {
+  min-width: 3.5em;                 /* evita que salte ao mudar de 9 para 10 */
+  font-size: 0.9rem;
+  font-weight: 600;
 }
 
 .tamanho-slider {
   width: 160px;
   accent-color: var(--cor-destaque);
+}
+
+/* Bloqueado durante a partida (o app.js põe "disabled") */
+.tamanho-slider:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 
 
@@ -253,12 +279,105 @@ button {
   max-width: var(--tabuleiro-tamanho);
 }
 
-.tabuleiro-imagem {
+/* O SVG é quadrado e estica até à largura máxima */
+.tabuleiro-svg {
   display: block;
   width: 100%;
   height: auto;
+  aspect-ratio: 1;
   border: 1px solid var(--cor-borda);
   border-radius: var(--raio);
+  user-select: none;
+}
+
+.tabuleiro-fundo {
+  fill: var(--tab-fundo);
+}
+
+.tabuleiro-linhas line {
+  stroke: var(--tab-linha);
+  stroke-width: var(--tab-linha-largura);
+  stroke-linecap: round;
+}
+
+/* Cada ponto do tabuleiro (<g class="casa">) */
+.casa {
+  cursor: pointer;
+}
+
+.casa-clique {
+  fill: transparent;                /* área de clique invisível */
+}
+
+.casa-ponto {
+  fill: var(--tab-linha);
+}
+
+/* Peças */
+.peca {
+  stroke: var(--peca-contorno);
+  stroke-width: 3;
+  transition: stroke 0.15s;
+}
+
+.peca-jogador1 { fill: var(--peca-jogador1); }
+.peca-jogador2 { fill: var(--peca-jogador2); }
+
+/* --- Realces (classes postas pelo app.js) --- */
+
+/* Só se pode clicar onde há alguma coisa a fazer */
+.casa {
+  cursor: default;
+}
+
+.casa.jogavel,
+.casa.soprada,
+.casa:has(.destino) {
+  cursor: pointer;
+}
+
+/* Peças do jogador da vez que têm jogadas */
+.casa.jogavel:hover .peca {
+  stroke: var(--tab-selecao);
+}
+
+/* Peça selecionada */
+.casa.selecionada .peca {
+  stroke: var(--tab-selecao);
+  stroke-width: 8;
+}
+
+/* Pontos para onde a peça selecionada pode ir */
+.destino {
+  fill: var(--tab-destaque);
+  opacity: 0.85;
+  pointer-events: none;             /* o clique vai para a casa */
+}
+
+.destino-captura {
+  fill: var(--tab-captura);
+}
+
+.casa:hover .destino {
+  opacity: 1;
+}
+
+/* Peça adversária que seria capturada */
+.casa.alvo .peca {
+  stroke: var(--tab-captura);
+  stroke-width: 6;
+}
+
+/* Regra do sopro: peça que o jogador da vez pode retirar */
+.casa.soprada .peca {
+  stroke: var(--cor-destaque);
+  stroke-width: 6;
+  stroke-dasharray: 8 6;
+  animation: piscar 1s ease-in-out infinite alternate;
+}
+
+@keyframes piscar {
+  to { opacity: 0.45; }
 }
 
 
@@ -286,6 +405,40 @@ button {
   font-size: 0.9rem;
 }
 
+.mensagem + .mensagem {
+  margin-top: 4px;
+}
+
+/* Linha principal: de quem é a vez */
+.mensagem-vez {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+/* Linha secundária: o que acabou de acontecer */
+.mensagem-detalhe {
+  font-size: 0.85rem;
+  color: #555555;
+}
+
+/* Bolinha com a cor do jogador dentro do texto */
+.mensagem-peca {
+  display: inline-block;
+  width: 0.9em;
+  height: 0.9em;
+  margin-right: 0.3em;
+  vertical-align: -0.1em;
+  border: 2px solid var(--peca-contorno);
+  border-radius: 50%;
+}
+
+.mensagem-jogador {
+  white-space: nowrap;
+}
+
+.mensagem-peca-jogador1 { background: var(--peca-jogador1); }
+.mensagem-peca-jogador2 { background: var(--peca-jogador2); }
+
 .botao-desistir {
   background: var(--cor-destaque);
   border-color: var(--cor-destaque);
@@ -295,4 +448,20 @@ button {
 
 .botao-desistir:hover {
   background: #b01f1f;
+}
+
+/* No fim da partida o mesmo botão passa a "Jogar de novo" */
+.botao-novo-jogo {
+  background: var(--tab-destaque);
+  border-color: var(--tab-destaque);
+}
+
+.botao-novo-jogo:hover {
+  background: #21867a;
+}
+
+/* Confirmação "Desistir mesmo?": Sim / Não no lugar do botão */
+.confirmacao {
+  display: flex;
+  gap: 8px;
 }

@@ -1,16 +1,17 @@
 <!DOCTYPE html>
 <!--
   ============================================================
-  ALBUQUERQUE — Primeira entrega (protótipo estático)
+  ALQUERQUE
   ------------------------------------------------------------
-  Página única: tudo vive neste ficheiro. Não há JavaScript.
-  Toda a aparência (cores, tamanhos, espaçamentos, fonte)
-  é alterada no style.css — aqui só está a estrutura.
+  Página única. Aqui só está a estrutura:
+    - aparência (cores, tamanhos, fonte) → style.css
+    - modelo do tabuleiro (sem página)   → tabuleiro.js
+    - desenho do tabuleiro e cliques     → app.js
 
   Mapa da página (procure pelos blocos "ZONA"):
     ZONA 1 — Cabeçalho: logotipo (esq.) + login e menu (dir.)
     ZONA 2 — Opções de jogo: dificuldade + tamanho do tabuleiro
-    ZONA 3 — Tabuleiro (imagem placeholder)
+    ZONA 3 — Tabuleiro (desenhado em SVG pelo app.js)
     ZONA 4 — Rodapé do jogo: mensagens + botão desistir
   ============================================================
 -->
@@ -20,7 +21,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- ALTERAR AQUI: título que aparece no separador do browser -->
-  <title>Albuquerque</title>
+  <title>Alquerque</title>
 
   <!-- Fonte Montserrat (Google Fonts). Usada na página toda via style.css -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -43,7 +44,7 @@
          A primeira letra fica num <span class="logotipo-inicial">
          para poder ter tamanho/cor próprios (ver style.css). -->
     <h1 class="logotipo">
-      <span class="logotipo-inicial">A</span>lbuquerque
+      <span class="logotipo-inicial">A</span>lquerque
     </h1>
 
     <div class="cabecalho-direita">
@@ -68,7 +69,10 @@
                ALTERAR AQUI: texto das instruções do jogo. -->
           <section class="menu-secao instrucoes">
             <h2 class="menu-titulo">Instruções</h2>
-            <p class="menu-texto">As regras do jogo vão aparecer aqui.</p>
+            <p class="menu-texto">Cada jogador move uma peça por vez para um ponto vazio ligado por uma linha.</p>
+            <p class="menu-texto">Para capturar, salta-se sobre uma peça adversária vizinha para o ponto vazio logo a seguir. Podem fazer-se várias capturas seguidas.</p>
+            <p class="menu-texto"><strong>Regra do sopro:</strong> se podias capturar e não o fizeste, o adversário pode "soprar" (retirar) a peça que devia ter capturado. Soprar não gasta a jogada, mas tem de ser feito logo no turno seguinte.</p>
+            <p class="menu-texto">Ganha quem capturar todas as peças do adversário ou o deixar sem jogadas.</p>
           </section>
 
           <!-- CLASSIFICAÇÕES
@@ -120,13 +124,13 @@
 
       <!-- TAMANHO DO TABULEIRO
            ALTERAR AQUI: min/max/value do slider (3 a 10).
-           Sem JavaScript o número não atualiza ao arrastar;
-           por isso mostramos os limites dos dois lados. -->
+           value="5" é o Alquerque clássico (5×5, 12 peças cada).
+           Ao arrastar, o app.js redesenha o tabuleiro e
+           atualiza o número em #tamanho-valor. -->
       <fieldset class="opcao tamanho">
         <legend class="opcao-titulo">Tabuleiro</legend>
-        <span class="tamanho-limite">3×3</span>
-        <input class="tamanho-slider" type="range" name="tamanho" min="3" max="10" step="1" value="6">
-        <span class="tamanho-limite">10×10</span>
+        <input class="tamanho-slider" id="tamanho-slider" type="range" name="tamanho" min="3" max="10" step="1" value="5">
+        <span class="tamanho-valor" id="tamanho-valor">5×5</span>
       </fieldset>
 
     </section>
@@ -134,10 +138,11 @@
 
     <!-- ======================================================
          ZONA 3 — TABULEIRO
-         ALTERAR AQUI: trocar a imagem placeholder pelo jogo.
+         O <svg> começa vazio: o app.js desenha lá dentro as
+         linhas, os pontos e as peças a partir do estado do jogo.
          ====================================================== -->
     <section class="tabuleiro">
-      <img class="tabuleiro-imagem" src="tabuleiro-placeholder.png" alt="Tabuleiro do jogo (placeholder)">
+      <svg class="tabuleiro-svg" id="tabuleiro-svg" role="img" aria-label="Tabuleiro do jogo"></svg>
     </section>
 
 
@@ -147,17 +152,32 @@
     <section class="rodape-jogo">
 
       <!-- MENSAGENS
-           ALTERAR AQUI: texto de estado do jogo. -->
-      <div class="mensagens">
-        <p class="mensagem">Bem-vindo! Escolhe a dificuldade e o tamanho do tabuleiro.</p>
+           Preenchidas pelo app.js (NÃO apagar nenhuma das duas):
+             #mensagem-vez → de quem é a vez (e se pode soprar)
+             #mensagem     → o que acabou de acontecer -->
+      <div class="mensagens" aria-live="polite">
+        <p class="mensagem mensagem-vez" id="mensagem-vez">A carregar o jogo…</p>
+        <p class="mensagem mensagem-detalhe" id="mensagem"></p>
       </div>
 
-      <!-- DESISTIR -->
-      <button class="botao botao-desistir" type="button">Desistir</button>
+      <!-- DESISTIR / JOGAR DE NOVO
+           Um só botão: o app.js muda o texto no fim da partida.
+           Ao desistir, o botão dá lugar à confirmação Sim/Não. -->
+      <button class="botao botao-desistir" id="botao-jogo" type="button">Desistir</button>
+
+      <div class="confirmacao" id="confirmacao" hidden>
+        <button class="botao botao-desistir" id="confirmar-sim" type="button">Sim</button>
+        <button class="botao" id="confirmar-nao" type="button">Não</button>
+      </div>
 
     </section>
 
   </main>
+
+  <!-- Scripts no fim, para a página já existir quando correm.
+       A ordem importa: o app.js usa funções do tabuleiro.js. -->
+  <script src="tabuleiro.js"></script>
+  <script src="app.js"></script>
 
 </body>
 </html>
