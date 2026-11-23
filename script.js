@@ -189,7 +189,10 @@ function novoJogo() {
   agendarIA();
 }
 
-document.getElementById('novo-jogo').addEventListener('click', novoJogo);
+document.getElementById('novo-jogo').addEventListener('click', () => {
+  if (!fim && contraIA && vez === COR_IA) return; // espera a ia acabar
+  novoJogo();
+});
 novoJogo();
 document.getElementById('desistir').addEventListener('click', () => {
   if (fim) return;
@@ -325,10 +328,30 @@ function agendarIA() {
 function jogarIA() {
   if (fim || vez !== COR_IA) return;
   const jogada = escolherJogada(tab, vez, sopraveis, dificuldade);
-  const r = aplicarJogada(tab, vez, jogada);
-  tab = r.tab;
-  penalizadas = r.penalizadas;
-  passarVez();
+  const r = aplicarJogada(tab, vez, jogada); // resultado final e penalizadas
+
+  if (jogada.sopro) tab[jogada.sopro.l][jogada.sopro.c] = null;
+  sopraveis = [];
+  mostrarPasso(jogada, 1, r);
+}
+
+// faz o passo i do caminho, desenha, e agenda o passo seguinte
+function mostrarPasso(jogada, i, r) {
+  const de   = jogada.caminho[i - 1];
+  const para = jogada.caminho[i];
+  tab[para.l][para.c] = vez;
+  tab[de.l][de.c] = null;
+  if (jogada.captura) {
+    tab[(de.l + para.l) / 2][(de.c + para.c) / 2] = null; // tira a peça saltada
+  }
+  desenhar();
+
+  if (i < jogada.caminho.length - 1) {
+    setTimeout(() => mostrarPasso(jogada, i + 1, r), 600); // tempo de espera
+  } else {
+    penalizadas = r.penalizadas;
+    passarVez();
+  }
 }
 
 /* ===== fim implementa ia ===== */
