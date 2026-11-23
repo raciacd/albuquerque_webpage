@@ -330,9 +330,15 @@ function jogarIA() {
   const jogada = escolherJogada(tab, vez, sopraveis, dificuldade);
   const r = aplicarJogada(tab, vez, jogada); // resultado final e penalizadas
 
-  if (jogada.sopro) tab[jogada.sopro.l][jogada.sopro.c] = null;
   sopraveis = [];
-  mostrarPasso(jogada, 1, r);
+  if (jogada.sopro) {
+    tab[jogada.sopro.l][jogada.sopro.c] = null;   // 1) sopra
+    desenhar();
+    estadoEl.textContent = 'A IA soprou uma peça tua!';
+    setTimeout(() => mostrarPasso(jogada, 1, r), 800); // 2) só depois joga
+  } else {
+    mostrarPasso(jogada, 1, r);
+  }
 }
 
 // faz o passo i do caminho, desenha, e agenda o passo seguinte
