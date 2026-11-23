@@ -17,6 +17,8 @@ let penalizadas = []; // pecas do jogador atual que podem vir a ser sopradas
 let sopraveis   = []; // pecas do adversario que podem ser sopradas agora
 let historico = {};
 let ranking = {};
+let contraIA = false;
+let dificuldade = 'facil';
 const REPETICOES = 2;
 const tabEl = document.querySelector('.tabuleiro');
 const estadoEl = document.getElementById('estado');
@@ -24,6 +26,7 @@ const casas = []; // casas[l][c] = o <div> dessa casa
 const perguntaEl    = document.getElementById('pergunta-empate');
 const textoEmpateEl = document.getElementById('texto-empate');
 const tabelaRankingEl = document.getElementById('tabela-ranking');
+const COR_IA = 'P';
 
 // criar as linhas do tabuleiro
 
@@ -84,10 +87,10 @@ function direcoes(l, c) {
 
 // jogadas possiveis
 
-function jogadas(l, c, soCapturas) {
+function jogadas(l, c, soCapturas, t = tab, cor = vez) {
   const lista   = [];
-  const inimigo = outraCor(vez);
-  const frente  = (vez === 'B') ? -1 : 1; // brancas sobem, pretas descem
+  const inimigo = outraCor(cor);
+  const frente  = (cor === 'B') ? -1 : 1; // brancas sobem, pretas descem
 
   for (const [dl, dc] of direcoes(l, c)) {
     const paraTras = (dl === -frente);
@@ -96,11 +99,11 @@ function jogadas(l, c, soCapturas) {
     const l2 = l + 2 * dl, c2 = c + 2 * dc; // a seguir ao vizinho
 
     // movimento simples
-    if (!soCapturas && !paraTras && dentro(l1, c1) && tab[l1][c1] === null) {
+    if (!soCapturas && !paraTras && dentro(l1, c1) && t[l1][c1] === null) {
       lista.push({ l: l1, c: c1, captura: null });
     }
     // captura: vizinho eh inimigo e a casa a seguinte esta vazia
-    if (dentro(l2, c2) && tab[l1][c1] === inimigo && tab[l2][c2] === null) {
+    if (dentro(l2, c2) && t[l1][c1] === inimigo && t[l2][c2] === null) {
       lista.push({ l: l2, c: c2, captura: { l: l1, c: c1 } });
     }
   }
@@ -114,11 +117,11 @@ function temJogadas() {
   return false;
 }
 
-function pecasComCaptura() {
+function pecasComCaptura(t = tab, cor = vez) {
   const lista = [];
   for (let l = 0; l < N; l++)
     for (let c = 0; c < N; c++)
-      if (tab[l][c] === vez && jogadas(l, c, true).length > 0) lista.push({ l, c });
+      if (t[l][c] === cor && jogadas(l, c, true, t, cor).length > 0) lista.push({ l, c });
   return lista;
 }
 
@@ -171,6 +174,8 @@ function novoJogo() {
   ];
   const comeca = document.querySelector('input[name="comeca"]:checked').value;
   vez = (comeca === 'brancas') ? 'B' : 'P';
+  contraIA = document.querySelector('input[name="adversario"]:checked').value === 'ia';
+  dificuldade = document.querySelector('input[name="dificuldade"]:checked').value;
   selecionada = null;
   emCaptura = false;
   fim = false;
@@ -181,12 +186,14 @@ function novoJogo() {
   historico = {};
   posicaoRepetida();
   mostrarRanking();
+  agendarIA();
 }
 
 document.getElementById('novo-jogo').addEventListener('click', novoJogo);
 novoJogo();
 document.getElementById('desistir').addEventListener('click', () => {
   if (fim) return;
+  if (contraIA && vez === COR_IA) return;
   terminar('As ' + nomeCor(vez) + ' desistiram. Ganharam as ' + nomeCor(outraCor(vez)) + '!', outraCor(vez));
 });
 function mostrarPerguntaEmpate(quemPropoe) {
@@ -196,6 +203,10 @@ function mostrarPerguntaEmpate(quemPropoe) {
 }
 document.getElementById('empate').addEventListener('click', () => {
   if (fim) return;
+  if (contraIA) {
+    estadoEl.textContent = 'A IA recusou o empate.';
+    return;
+  }
   mostrarPerguntaEmpate(vez);
 });
 document.getElementById('aceitar-empate').addEventListener('click', () => {
@@ -230,6 +241,7 @@ function terminar(mensagem, vencedor) {
 /* ===== funcoes para tabela ===== */
 
 function jogador(cor) {
+  if (contraIA && cor === COR_IA) return 'IA ' + dificuldade;
   return (cor === 'B') ? 'Brancas' : 'Pretas';
 }
 
@@ -296,15 +308,38 @@ function passarVez() {
     return;
   }
   desenhar();
+  agendarIA();
 }
 
 /* ===== fim passar a vez durante jogada ===== */
+
+/* ===== implementa ia ===== */
+
+function agendarIA() {
+  if (!fim && contraIA && vez === COR_IA) {
+    estadoEl.textContent = 'A IA está a pensar...';
+    setTimeout(jogarIA, 500);
+  }
+}
+
+function jogarIA() {
+  if (fim || vez !== COR_IA) return;
+  const jogada = escolherJogada(tab, vez, sopraveis, dificuldade);
+  const r = aplicarJogada(tab, vez, jogada);
+  tab = r.tab;
+  penalizadas = r.penalizadas;
+  passarVez();
+}
+
+/* ===== fim implementa ia ===== */
 
 /* ===== passo a passo dos cliques no tabuleiro ===== */
 
 tabEl.addEventListener('click', (evento) => { // um eventlistener para todo tabuleiro, usa de bubbling para saber qual peca foi selecionada
   if (fim) return;
 
+  if (contraIA && vez === COR_IA) return;
+  
   const casa = evento.target.closest('.casa');
   if (!casa) return;
 

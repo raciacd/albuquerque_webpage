@@ -3,7 +3,7 @@ function copiar(t) {
   return t.map(linha => linha.slice());
 }
 
-// uma jogada completa da IA:
+// exemplo jogada completa da IA:
 // { sopro: {l,c} ou null, caminho: [{l,c}, {l,c}, ...], captura: true/false }
 // caminho[0] é onde a peça está; os seguintes são onde vai parando
 
@@ -18,14 +18,13 @@ function cadeias(t, cor, caminho, sopro, lista) {
 
     const novoCaminho = caminho.concat([{ l: j.l, c: j.c }]);
     lista.push({ sopro: sopro, caminho: novoCaminho, captura: true }); // parar aqui
-    cadeias(novo, cor, novoCaminho, sopro, lista);                     // ou continuar
+    cadeias(novo, cor, novoCaminho, sopro, lista); // ou continuar a captura em cadeia
   }
 }
 
-// todas as jogadas completas possíveis para 'cor'
 function todasJogadas(t, cor, sopraveis) {
   const lista = [];
-  const opcoesSopro = [null].concat(sopraveis); // não soprar, ou soprar uma delas
+  const opcoesSopro = [null].concat(sopraveis); // nao soprar ou soprar
 
   for (const sopro of opcoesSopro) {
     const tt = copiar(t);
@@ -48,8 +47,8 @@ function todasJogadas(t, cor, sopraveis) {
   return lista;
 }
 
-// aplica uma jogada completa a uma cópia do tabuleiro
-// devolve o tabuleiro novo e as peças que ficam penalizadas (para o sopro)
+// aplica uma jogada completa a copia do tabuleiro
+// devolve o tabuleiro novo e as peças que ficam penalizadas
 function aplicarJogada(t, cor, jogada) {
   const novo = copiar(t);
   if (jogada.sopro) novo[jogada.sopro.l][jogada.sopro.c] = null;
@@ -59,7 +58,7 @@ function aplicarJogada(t, cor, jogada) {
   const destino = caminho[caminho.length - 1];
   let penalizadas = [];
 
-  // movimento simples quando alguma peça podia capturar → penalizadas
+  // movimento simples quando alguma peça podia capturar => penalizadas
   if (!jogada.captura) {
     penalizadas = pecasComCaptura(novo, cor).map(p =>
       (p.l === origem.l && p.c === origem.c) ? destino : p
@@ -73,11 +72,11 @@ function aplicarJogada(t, cor, jogada) {
     novo[para.l][para.c] = cor;
     novo[de.l][de.c] = null;
     if (jogada.captura) {
-      novo[(de.l + para.l) / 2][(de.c + para.c) / 2] = null; // a peça saltada fica no meio
+      novo[(de.l + para.l) / 2][(de.c + para.c) / 2] = null; // a peça saltada fica entre as duas
     }
   }
 
-  // parou a captura quando ainda podia continuar → penalizada
+  // parou a captura quando ainda podia continuar => penalizada
   if (jogada.captura && jogadas(destino.l, destino.c, true, novo, cor).length > 0) {
     penalizadas = [destino];
   }
@@ -85,7 +84,7 @@ function aplicarJogada(t, cor, jogada) {
   return { tab: novo, penalizadas: penalizadas };
 }
 
-// pontuação de um tabuleiro do ponto de vista de 'cor': minhas peças - peças do adversário
+// pontuação de um tabuleiro (numeor de pecas vs do advesario)
 function avaliar(t, cor) {
   let pontos = 0;
   for (let l = 0; l < N; l++) {
@@ -97,7 +96,7 @@ function avaliar(t, cor) {
   return pontos;
 }
 
-// minimax: imagina as jogadas até 'profundidade' e devolve a pontuação para a IA
+// minimax, profundidade gera custo
 function minimax(t, cor, sopraveis, profundidade, corIA) {
   if (profundidade === 0) return avaliar(t, corIA);
 
@@ -106,7 +105,7 @@ function minimax(t, cor, sopraveis, profundidade, corIA) {
     return (cor === corIA) ? -1000 : 1000; // quem não tem jogadas perde
   }
 
-  // a IA quer o valor mais alto, o adversário o mais baixo
+  // a IA quer o valor mais alto e o adversario o mais baixo
   let melhor = (cor === corIA) ? -Infinity : Infinity;
   for (const j of lista) {
     const r = aplicarJogada(t, cor, j);
