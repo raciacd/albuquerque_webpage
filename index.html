@@ -1,183 +1,87 @@
 <!DOCTYPE html>
-<!--
-  ============================================================
-  ALQUERQUE
-  ------------------------------------------------------------
-  Página única. Aqui só está a estrutura:
-    - aparência (cores, tamanhos, fonte) → style.css
-    - modelo do tabuleiro (sem página)   → tabuleiro.js
-    - desenho do tabuleiro e cliques     → app.js
-
-  Mapa da página (procure pelos blocos "ZONA"):
-    ZONA 1 — Cabeçalho: logotipo (esq.) + login e menu (dir.)
-    ZONA 2 — Opções de jogo: dificuldade + tamanho do tabuleiro
-    ZONA 3 — Tabuleiro (desenhado em SVG pelo app.js)
-    ZONA 4 — Rodapé do jogo: mensagens + botão desistir
-  ============================================================
--->
 <html lang="pt">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <!-- ALTERAR AQUI: título que aparece no separador do browser -->
-  <title>Alquerque</title>
-
-  <!-- Fonte Montserrat (Google Fonts). Usada na página toda via style.css -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
-
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <title>Alquerque</title>
+    <!-- carregar fonte -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
+<body>
+    <header class="cabecalho">
+        <h1 class="titulo">Alquerque</h1>
 
-<body class="pagina">
+        <form class="login">
+            <input type="text" placeholder="Utilizador">
+            <input type="password" placeholder="Password">
+            <button type="submit">Entrar</button>
+        </form>
 
-  <!-- ========================================================
-       ZONA 1 — CABEÇALHO
-       Logotipo à esquerda; login + menu hambúrguer à direita.
-       ======================================================== -->
-  <header class="cabecalho">
+        <button class="hamburguer" aria-label="Abrir menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </header>
 
-    <!-- LOGOTIPO
-         ALTERAR AQUI: o texto do logotipo.
-         A primeira letra fica num <span class="logotipo-inicial">
-         para poder ter tamanho/cor próprios (ver style.css). -->
-    <h1 class="logotipo">
-      <span class="logotipo-inicial">A</span>lquerque
-    </h1>
+    <nav class="menu" id="menu">
+        <ul>
+            <li>Regras
+            <p>testetestetestetestetestetestetestetestetestetestetestetestetestetestetestetestetesteteste</p>
+            </li>
+            <li>Classificações
+                <table class="ranking">
+                    <thead>
+                        <tr><th>Jogador</th><th>V</th><th>D</th><th>E</th></tr>
+                    </thead>
+                    <tbody id="tabela-ranking"></tbody>
+                </table>
+            </li>
+        </ul>
+    </nav>
 
-    <div class="cabecalho-direita">
+    <main>
+        <div class="opcoes">
+            <fieldset>
+                <legend>Adversário</legend>
+                <label><input type="radio" name="adversario" value="humano" checked> Humano</label>
+                <label><input type="radio" name="adversario" value="ia"> IA</label>
+            </fieldset>
 
-      <!-- LOGIN
-           ALTERAR AQUI: textos dos campos e do botão. -->
-      <form class="login" action="#" method="post">
-        <input class="login-campo" type="text" name="utilizador" placeholder="Utilizador">
-        <input class="login-campo" type="password" name="senha" placeholder="Senha">
-        <button class="botao login-botao" type="submit">Entrar</button>
-      </form>
+            <fieldset>
+                <legend>Dificuldade</legend>
+                <label><input type="radio" name="dificuldade" value="facil" checked> Fácil</label>
+                <label><input type="radio" name="dificuldade" value="medio"> Médio</label>
+                <label><input type="radio" name="dificuldade" value="dificil"> Difícil</label>
+            </fieldset>
 
-      <!-- MENU DE CONFIGURAÇÕES (hambúrguer)
-           Usa <details>, que abre e fecha com um clique sem precisar
-           de JavaScript. O ícone ☰ está no <summary>. -->
-      <details class="menu">
-        <summary class="menu-botao" title="Configurações">&#9776;</summary>
-
-        <div class="menu-painel">
-
-          <!-- INSTRUÇÕES
-               ALTERAR AQUI: texto das instruções do jogo. -->
-          <section class="menu-secao instrucoes">
-            <h2 class="menu-titulo">Instruções</h2>
-            <p class="menu-texto">Cada jogador move uma peça por vez para um ponto vazio ligado por uma linha.</p>
-            <p class="menu-texto">Para capturar, salta-se sobre uma peça adversária vizinha para o ponto vazio logo a seguir. Podem fazer-se várias capturas seguidas.</p>
-            <p class="menu-texto"><strong>Regra do sopro:</strong> se podias capturar e não o fizeste, o adversário pode "soprar" (retirar) a peça que devia ter capturado. Soprar não gasta a jogada, mas tem de ser feito logo no turno seguinte.</p>
-            <p class="menu-texto">Ganha quem capturar todas as peças do adversário ou o deixar sem jogadas.</p>
-          </section>
-
-          <!-- CLASSIFICAÇÕES
-               ALTERAR AQUI: linhas da tabela (uma <tr> por jogador). -->
-          <section class="menu-secao classificacoes">
-            <h2 class="menu-titulo">Classificações</h2>
-            <table class="tabela">
-              <thead>
-                <tr><th>#</th><th>Jogador</th><th>Vitórias</th></tr>
-              </thead>
-              <tbody>
-                <tr><td>1</td><td>—</td><td>0</td></tr>
-                <tr><td>2</td><td>—</td><td>0</td></tr>
-                <tr><td>3</td><td>—</td><td>0</td></tr>
-              </tbody>
-            </table>
-          </section>
-
+            <fieldset>
+                <legend>Começam</legend>
+                <label><input type="radio" name="comeca" value="brancas" checked> Brancas</label>
+                <label><input type="radio" name="comeca" value="pretas"> Pretas</label>
+            </fieldset>
         </div>
-      </details>
 
-    </div>
-  </header>
+        <div class="controlo">
+            <button id="novo-jogo">Novo jogo</button>
+            <button id="desistir">Desistir</button>
+            <button id="empate">Propor empate</button>
+            <p id="estado"></p>
 
+            <div id="pergunta-empate" hidden>
+                <p id="texto-empate"></p>
+                <button id="aceitar-empate">Aceitar</button>
+                <button id="recusar-empate">Recusar</button>
+            </div>
+        </div>
 
-  <main class="jogo">
+        <div class="tabuleiro">
+            <svg viewBox="0 0 400 400"></svg>
+        </div>
+    </main>
 
-    <!-- ======================================================
-         ZONA 2 — OPÇÕES DE JOGO
-         Dificuldade (bolinhas) + tamanho do tabuleiro (slider).
-         ====================================================== -->
-    <section class="opcoes">
-
-      <!-- DIFICULDADE
-           Botões de rádio: só um pode estar escolhido.
-           "checked" indica o valor escolhido por omissão. -->
-      <fieldset class="opcao dificuldade">
-        <legend class="opcao-titulo">Dificuldade</legend>
-        <label class="dificuldade-item">
-          <input type="radio" name="dificuldade" value="facil" checked> Fácil
-        </label>
-        <label class="dificuldade-item">
-          <input type="radio" name="dificuldade" value="medio"> Médio
-        </label>
-        <label class="dificuldade-item">
-          <input type="radio" name="dificuldade" value="dificil"> Difícil
-        </label>
-      </fieldset>
-
-      <!-- TAMANHO DO TABULEIRO
-           ALTERAR AQUI: min/max/value do slider (3 a 10).
-           value="5" é o Alquerque clássico (5×5, 12 peças cada).
-           Ao arrastar, o app.js redesenha o tabuleiro e
-           atualiza o número em #tamanho-valor. -->
-      <fieldset class="opcao tamanho">
-        <legend class="opcao-titulo">Tabuleiro</legend>
-        <input class="tamanho-slider" id="tamanho-slider" type="range" name="tamanho" min="3" max="10" step="1" value="5">
-        <span class="tamanho-valor" id="tamanho-valor">5×5</span>
-      </fieldset>
-
-    </section>
-
-
-    <!-- ======================================================
-         ZONA 3 — TABULEIRO
-         O <svg> começa vazio: o app.js desenha lá dentro as
-         linhas, os pontos e as peças a partir do estado do jogo.
-         ====================================================== -->
-    <section class="tabuleiro">
-      <svg class="tabuleiro-svg" id="tabuleiro-svg" role="img" aria-label="Tabuleiro do jogo"></svg>
-    </section>
-
-
-    <!-- ======================================================
-         ZONA 4 — MENSAGENS + DESISTIR
-         ====================================================== -->
-    <section class="rodape-jogo">
-
-      <!-- MENSAGENS
-           Preenchidas pelo app.js (NÃO apagar nenhuma das duas):
-             #mensagem-vez → de quem é a vez (e se pode soprar)
-             #mensagem     → o que acabou de acontecer -->
-      <div class="mensagens" aria-live="polite">
-        <p class="mensagem mensagem-vez" id="mensagem-vez">A carregar o jogo…</p>
-        <p class="mensagem mensagem-detalhe" id="mensagem"></p>
-      </div>
-
-      <!-- DESISTIR / JOGAR DE NOVO
-           Um só botão: o app.js muda o texto no fim da partida.
-           Ao desistir, o botão dá lugar à confirmação Sim/Não. -->
-      <button class="botao botao-desistir" id="botao-jogo" type="button">Desistir</button>
-
-      <div class="confirmacao" id="confirmacao" hidden>
-        <button class="botao botao-desistir" id="confirmar-sim" type="button">Sim</button>
-        <button class="botao" id="confirmar-nao" type="button">Não</button>
-      </div>
-
-    </section>
-
-  </main>
-
-  <!-- Scripts no fim, para a página já existir quando correm.
-       A ordem importa: o app.js usa funções do tabuleiro.js. -->
-  <script src="tabuleiro.js"></script>
-  <script src="app.js"></script>
-
+    <script src="script.js"></script>
 </body>
 </html>
